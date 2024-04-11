@@ -23,7 +23,7 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                         {'label': 'All Sites', 'value': 'ALL'},
                                         {'label': 'CCAFS LC-40', 'value': 'CCAFS LC-40'},
                                         {'label': 'VAFB SLC-4E', 'value': 'VAFB SLC-4E'},
-                                        {'label': 'KSC LC-39A', 'value': 'CCAFS LC-40'},
+                                        {'label': 'KSC LC-39A', 'value': 'KSC LC-39A'},
                                         {'label': 'CCAFS SLC-40', 'value': 'CCAFS SLC-40'},
                                         ],
                                     value='ALL',
@@ -66,11 +66,13 @@ def get_pie_chart(entered_site):
         return fig
 
     else:
-        filtered_df = filtered_df[[filtered_df[['Launch Site']] == entered_site]]
-        fig = px.pie(filtered_df, values="class",
-        title=f'Distribution of Success and Failure rate for the site {entered_site}')
+        filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
+        success_rate = filtered_df['class'].value_counts().rename({1: 'Success', 0: 'Failure'})
+        fig = px.pie(values=success_rate.values, 
+        names=success_rate.index, 
+        title=f'Distribution of Success and Failure rate for {entered_site}')
         return fig
-        
+
 # TASK 4:
 # Add a callback function for `site-dropdown` and `payload-slider` as inputs, `success-payload-scatter-chart` as output
 @app.callback(Output(component_id='success-payload-scatter-chart', component_property='figure'),
